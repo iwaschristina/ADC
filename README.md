@@ -27,11 +27,17 @@ ADC is a Microsoft Access/VBA utility. Its authoritative architecture, naming, s
 
 - `x__UTIL_ADC_MODULE_GUARD` is a protected integrity/contract module.
 - `x__UTIL_ADC_NO_EDIT_REFERENCE` is protected and must not be changed.
-- The full VBA baseline includes **every VBA standard module, class module, document module, and form/report code-behind component** from the authoritative database, including protected/no-edit modules. Export exact current source without code changes.
+- The full ADC **utility** VBA baseline contains **all and only** VBA components with the exact module name `x__UTIL_ADC` or names beginning `x__UTIL_ADC_` from the authoritative database; export every matching component, including protected/no-edit modules, without code changes. Do not include unrelated modules. The delivery ZIP is flat and source-only, like prior full-baseline archives; keep its source integrity manifest outside the ZIP.
 - Access-only objects (saved queries, macros, form/report layouts, table data/schema, embedded resources, database configuration) are separate **supplementary restoration assets**, not prerequisites for declaring the **VBA source baseline** complete. Preserve/export them when available, but never substitute older material.
 - Preserve exact Access object names and existing namespaces; avoid automatic rename, repair, refactoring or migration during baseline acquisition.
 - Preserve module-level `CGPT-...` version, previous-version, baseline-version and timestamp tracking. These are **not** utility release versions.
 - Setup-phase ownership and cross-phase change restrictions remain in effect, including any Module Guard contracts.
+
+## Baseline source export tools
+
+- [`tools/Build-ADC-3.0-Full-VBA-Baseline.ps1`](tools/Build-ADC-3.0-Full-VBA-Baseline.ps1) exports the specified `x__UTIL_ADC`-family modules from a **disposable copy** of the authoritative `xlib2.accdb` on Windows with Microsoft Access. It checks the original database SHA-256 before and after extraction and builds a flat, source-only ZIP plus a separate JSON manifest.
+- [`tools/ADC_3.0_Full_VBA_Baseline_EXPORT_INSTRUCTIONS.txt`](tools/ADC_3.0_Full_VBA_Baseline_EXPORT_INSTRUCTIONS.txt) contains Windows execution steps and prerequisites.
+- Scripts are **not** application modules. The source ZIP, its exact module and SHA-256 inventory, and the GitHub published source tree must be independently compared before changing this repository's baseline status to complete. The example August 26 export must never substitute for the current database's modules.
 
 ## Development environment
 
