@@ -1,0 +1,65 @@
+name: Verify ADC 3.0 VBA baseline
+
+on:
+  push:
+    paths:
+      - 'src/vba/**'
+      - 'releases/**'
+      - 'docs/ADC_3.0_Full_VBA_Baseline_SHA256_Manifest.csv'
+      - '.github/workflows/verify-adc-baseline.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out committed contents
+        uses: actions/checkout@v4
+      - name: Verify complete baseline, exact module bytes and ZIP
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import csv, hashlib, pathlib, re, zipfile
+
+          root = pathlib.Path('.')
+          source_dir = root / 'src' / 'vba'
+          manifest = root / 'docs' / 'ADC_3.0_Full_VBA_Baseline_SHA256_Manifest.csv'
+          archive = root / 'releases' / 'ADC_3.0_x__UTIL_ADC_CGPT_CURRENT_FULL_BASELINE_20261012.zip'
+          archive_sha256 = '3e84af277417d76cc434f23006ff4d9d6bd95aa8babdad03c5f5a122fa48da3c'
+          sha256 = lambda data: hashlib.sha256(data).hexdigest()
+
+          with manifest.open('r', encoding='utf-8', newline='') as stream:
+              rows = list(csv.DictReader(stream))
+          assert len(rows) == 24, f'Expected 24 manifest rows, found {len(rows)}'
+          actual = {p.name: p for p in source_dir.glob('*.bas')}
+          expected = {r['filename'] for r in rows}
+          assert set(actual) == expected, f'Module inventory differs: {set(actual)^expected}'
+          required = {'x__UTIL_ADC_MODULE_GUARD','x__UTIL_ADC_MODULE_GUARD_DEFINITIONS','x__UTIL_ADC_NO_EDIT_REFERENCE'}
+          assert required <= {r['module_name'] for r in rows}
+          for record in rows:
+              assert record['utility_release'] == 'ADC 3.0'
+              assert record['source_stream_valid'] == 'ok'
+              module = record['module_name']
+              assert re.fullmatch(r'x__UTIL_ADC(?:_[A-Za-z0-9_]+)?', module), module
+              assert record['filename'] == f'{module}_{record["module_cgpt_version_id"]}.bas'
+              payload = actual[record['filename']].read_bytes()
+              assert len(payload) == int(record['size_bytes'])
+              assert sha256(payload) == record['sha256']
+              assert payload.startswith(f'Attribute VB_Name = "{module}"\r\n'.encode('ascii'))
+              assert f"' ChatGPT Version ID: {record['module_cgpt_version_id']}".encode() in payload[:15000]
+
+          assert sha256(archive.read_bytes()) == archive_sha256, 'Full-baseline ZIP SHA-256 mismatch'
+          with zipfile.ZipFile(archive) as z:
+              assert z.testzip() is None
+              assert set(z.namelist()) == expected
+              assert len(z.namelist()) == 24
+              for record in rows:
+                  assert z.read(record['filename']) == actual[record['filename']].read_bytes()
+
+          print('VERIFIED: 24 exact VBA sources + CRC-valid full-baseline ZIP + SHA-256 manifest')
+          print(f'ZIP_SHA256={archive_sha256}')
+          print(f'MODULE_COUNT={len(rows)}')
+          PY
