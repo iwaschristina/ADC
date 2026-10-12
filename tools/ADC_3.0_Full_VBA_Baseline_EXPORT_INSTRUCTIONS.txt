@@ -1,0 +1,38 @@
+ADC 3.0 FULL VBA BASELINE — WINDOWS EXPORT INSTRUCTIONS
+==========================================================
+
+These instructions build the requested flat source-only ZIP from the original,
+authoritative xlib2.accdb database; they DO NOT use older ADC baseline code.
+The existing ZIP supplied in the conversation was a native database backup,
+not a complete exported VBA source baseline.
+
+Required:
+  - Windows with desktop Microsoft Access installed.
+  - Trust Center > Macro Settings > "Trust access to the VBA project object model".
+  - The ADC 3.0 native ZIP previously supplied in this conversation.
+
+Steps:
+  1. Extract xlib2.accdb from ADC_3.0_xlib2_NATIVE_BASELINE_20261012.zip.
+  2. Save Build-ADC-3.0-Full-VBA-Baseline.ps1 beside xlib2.accdb.
+  3. Run Windows PowerShell 5.1 in the containing folder:
+       powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Build-ADC-3.0-Full-VBA-Baseline.ps1
+     (Only run this script if you have inspected/trust its source.)
+  4. The resulting VBA_Export_x_UTIL_ADC_*_ADC_3.0_CGPT_FINAL_FULL_BASELINE.zip
+     contains ONLY flat, unmodified VBA component exports with module names
+     exactly x__UTIL_ADC or beginning x__UTIL_ADC_. There is no manifest,
+     native database, unrelated module, or script inside the ZIP.
+  5. A separate *_MANIFEST.json lists all module names, individual SHA-256
+     checksums, version headers and the original database SHA-256.
+  6. Verify that every intended module is listed; provide the completed ZIP
+     and manifest for independent checking and GitHub publication.
+
+The script requires the following EXACT original xlib2.accdb SHA-256:
+  dfb116bb18e6e0556067584ca13eae9bd259f07382a1a6c877dc61a159f8b659
+
+The script works against a temporary database copy, never substitutes old
+source, and refuses a mismatched database or an incomplete module export.
+The source archive is verified against the VBE-generated module export files.
+The original database SHA-256 is checked again afterward.
+
+NOTE: This execution environment cannot run Microsoft Access/VBE automation.
+No complete latest source baseline has been produced by this environment.
