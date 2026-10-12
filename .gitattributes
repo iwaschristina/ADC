@@ -1,0 +1,22 @@
+# Keep original Access/VBA export bytes and archive files unchanged.
+# Version identifiers and Access SaveAsText output are preserved verbatim.
+*.bas -text
+*.cls -text
+*.frm -text
+*.frx -text
+*.accdb -text
+*.accde -text
+*.mdb -text
+*.mde -text
+*.zip -text
+*.sql -text
+
+# Historical Library files must not be normalized, even if text-like.
+archive/legacy-baselines/** -text
+
+# Repository-authored documentation and machine-readable manifests.
+*.md text eol=lf
+*.json text eol=lf
+*.csv text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
