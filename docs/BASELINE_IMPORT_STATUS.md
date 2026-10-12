@@ -5,7 +5,7 @@ Recorded: 2026-10-12 (America/New_York)
 
 ## Definition of the complete active baseline (updated by project owner)
 
-The **entire current VBA source** is the **full ADC 3.0 Git baseline**. It comprises all standard modules, class modules, document modules and any form/report code-behind VBA present in the latest authoritative Access database. Source must be extracted from one authoritative version, with its exact names, bytes, Module Guard contracts, protected/no-edit modules and CGPT version headers/chains preserved. A complete, verified VBA source manifest and GitHub readback hashes establish baseline completeness.
+The complete set of authoritative VBA components whose names are **exactly `x__UTIL_ADC` or start with `x__UTIL_ADC_`** is the **full ADC 3.0 Git baseline**. It includes all matching standard modules, classes, document modules and form/report code-behind components (if any) present in the latest authoritative Access database; unrelated modules are excluded. Source must be extracted from one authoritative version, with its exact names, bytes, Module Guard contracts, protected/no-edit modules and CGPT version headers/chains preserved. A complete, verified VBA source manifest and GitHub readback hashes establish baseline completeness.
 
 **An ACCDB binary, table data, saved queries, standalone macros, form/report layouts, embedded media, configuration/property exports, or other non-VBA database objects are _supplementary restoration assets_, not mandatory constituents of this defined VBA baseline.** Retain these as separate restoration materials when available. The full VBA baseline is not a claim that Git alone can restore the complete native Access database.
 
@@ -28,6 +28,10 @@ The **entire current VBA source** is the **full ADC 3.0 Git baseline**. It compr
 | Native database modified by extraction | No |
 
 No older module was substituted.
+
+## Committed preparation utilities
+
+The Windows-only exporter and execution instructions were committed to [`tools/`](../tools/); GitHub readback confirmed each Git blob matches the respective original generated file byte-for-byte. This exporter was **not executed here**; the environment has no Microsoft Access and the current source ZIP and sidecar manifest remain unavailable. Script preservation is not proof that the application was exported.
 
 ## GitHub active baseline publication
 
