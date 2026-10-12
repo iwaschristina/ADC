@@ -1,9 +1,9 @@
 # Access Development Console (ADC)
 
 **Utility release:** ADC 3.0  
-**State:** Repository preparation only — **complete authoritative VBA baseline not yet imported or verified**.
+**State:** **ADC 3.0 full VBA baseline published and independently verified**; native Access object restoration and runtime tests remain outside this source baseline.
 
-> Do not use the files currently committed to this repository as a restored, compiled, or independently verified ADC application. The complete authoritative source has **not** been imported.
+> The complete current **ADC utility VBA** source is in Git, but these source files alone do not restore the Access database or establish that the application compiles and runs in Microsoft Access.
 
 ## Source of truth
 
@@ -16,8 +16,8 @@
 | Original database size | `252628992` bytes |
 | Original database SHA-256 | `dfb116bb18e6e0556067584ca13eae9bd259f07382a1a6c877dc61a159f8b659` |
 | Original database in GitHub | **Not uploaded; optional for VBA baseline** |
-| Complete exported VBA source | **Not uploaded** |
-| Baseline verification | **Pending** |
+| Complete ADC VBA source (`x__UTIL_ADC` family) | **24 modules in `src/vba/`** |
+| VBA baseline verification | **Passed** — GitHub Actions full SHA-256/ZIP check and byte-for-byte source readback |
 
 The delivered ADC 3.0 native package preserves `xlib2.accdb` unchanged; it declares release 3.0 in package metadata but has **not** stamped the `ADCUtilityVersion` DAO property into the original database. A Windows finalization script in the conversation package makes a separate copy and applies that property.
 
@@ -33,15 +33,21 @@ ADC is a Microsoft Access/VBA utility. Its authoritative architecture, naming, s
 - Preserve module-level `CGPT-...` version, previous-version, baseline-version and timestamp tracking. These are **not** utility release versions.
 - Setup-phase ownership and cross-phase change restrictions remain in effect, including any Module Guard contracts.
 
+## Published ADC 3.0 baseline
+
+The 24 VBA modules were extracted read-only from `xlib2.accdb`, without replacing any module from a historical ZIP. Their original names, `CGPT-...` tracking headers, non-UTF-8 bytes and protected Module Guard/no-edit contents are preserved in [`src/vba/`](src/vba/).
+
+The source-only [`full-baseline ZIP`](releases/ADC_3.0_x__UTIL_ADC_CGPT_CURRENT_FULL_BASELINE_20261012.zip) contains **only 24 flat `.bas` files**. The separate [`SHA-256 manifest`](docs/ADC_3.0_Full_VBA_Baseline_SHA256_Manifest.csv) records exact byte sizes and checksums. The [GitHub Actions verification](.github/workflows/verify-adc-baseline.yml) passed after checking out the committed repository: all 24 module hashes, ZIP SHA-256 `3e84af277417d76cc434f23006ff4d9d6bd95aa8babdad03c5f5a122fa48da3c`, ZIP CRC and every ZIP entry matched. A Windows Access compile or native database restoration **has not** been performed.
+
 ## Baseline source export tools
 
 - [`tools/Build-ADC-3.0-Full-VBA-Baseline.ps1`](tools/Build-ADC-3.0-Full-VBA-Baseline.ps1) exports the specified `x__UTIL_ADC`-family modules from a **disposable copy** of the authoritative `xlib2.accdb` on Windows with Microsoft Access. It checks the original database SHA-256 before and after extraction and builds a flat, source-only ZIP plus a separate JSON manifest.
 - [`tools/ADC_3.0_Full_VBA_Baseline_EXPORT_INSTRUCTIONS.txt`](tools/ADC_3.0_Full_VBA_Baseline_EXPORT_INSTRUCTIONS.txt) contains Windows execution steps and prerequisites.
-- Scripts are **not** application modules. The source ZIP, its exact module and SHA-256 inventory, and the GitHub published source tree must be independently compared before changing this repository's baseline status to complete. The example August 26 export must never substitute for the current database's modules.
+- Scripts are **not** application modules. The latest baseline was recovered read-only from the original Access database without using the Windows exporter. GitHub Actions verified that the published ZIP matches all 24 committed modules and their SHA-256 manifest; the example August 26 exports were never substituted.
 
 ## Development environment
 
-To complete a verified **VBA** Git source baseline:
+For subsequent **VBA** baseline exports and verification:
 
 1. Use Windows with desktop Microsoft Access and Trust Center authorization to inspect/export VBA via VBE. Prefer performing extraction on a **copy** of the source database, and hash-checking the untouched original both before and afterward.
 2. Export **every current VBA component**, including standard modules, classes, document modules and form/report code-behind, using supported Access/VBE APIs (e.g. `VBComponents.Export`). Preserve exact names and source bytes, and build a module inventory from the **same** database.
@@ -50,19 +56,21 @@ To complete a verified **VBA** Git source baseline:
 5. Optionally export Access-only objects (queries, macros, layouts, schema, configuration, resources) as additional reconstruction materials. Keep these clearly distinguished from the full **VBA** baseline.
 6. Retain the unchanged database backup independently. Publishing it to GitHub is **optional** and requires independently verified large-file storage; the 252 MB binary and Git LFS do **not** block completing the VBA baseline.
 
-## Expected repository layout (not yet populated)
+## Repository layout
 
-- `src/` — **complete current VBA source exports** (standard/class/document/form/report code-behind) and integrity manifest.
+- [`src/vba/`](src/vba/) — 24 current, byte-preserved `x__UTIL_ADC`-family `.bas` modules, including Module Guard and protected reference modules.
 - `resources/` — optional supplementary dependency/resources/settings exports.
 - `database/` — optional authoritative ACCDB backup (requires verified large-file storage if published).
-- `docs/` — setup, restoration, integrity and regression documentation.
-- `archive/legacy-baselines/` — **only after** full active-source import and remote verification: untouched earlier archives and a reconciliation manifest.
+- [`docs/`](docs/) — source integrity manifests, setup/restoration requirements and verification records.
+- [`releases/`](releases/) — original flat source-only [ADC 3.0 full-baseline ZIP](releases/ADC_3.0_x__UTIL_ADC_CGPT_CURRENT_FULL_BASELINE_20261012.zip).
+- [`.github/workflows/verify-adc-baseline.yml`](.github/workflows/verify-adc-baseline.yml) — validates checked-out source hashes against the manifest and verifies the binary ZIP.
+- `archive/legacy-baselines/` — historic reference archives, subject to independent remote verification and file-specific cleanup gates.
 
-These paths describe intended layout; they do **not** imply files exist.
+Only the linked directories/files above are currently published. The optional `resources/`, `database/` and historical archive directory may be incomplete or absent.
 
 ## Restoring the application
 
-**A full VBA baseline is not the same as a fully reconstructable Access database.** Retain the original ADC 3.0 native baseline ZIP and `xlib2.accdb` for native restoration. Once source import is complete, Git will preserve the complete VBA code/version history; reconstructing an entire Access application additionally needs the appropriate database and non-VBA objects. Verify Module Guard, references, startup/setup phases and runtime behavior before relying on a restored utility.
+**A full VBA baseline is not the same as a fully reconstructable Access database.** Retain the original ADC 3.0 native baseline ZIP and `xlib2.accdb` for native restoration. Git now preserves the complete ADC 3.0 utility VBA source and CGPT module revision history; reconstructing an entire Access application additionally needs the appropriate database and non-VBA objects. Verify Module Guard, references, startup/setup phases and runtime behavior before relying on a restored utility.
 
 ## Historical archives and safety
 
