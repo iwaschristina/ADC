@@ -1,0 +1,28 @@
+# Disposable Access lock/session files
+*.laccdb
+*.ldb
+
+# Local editor/runtime output
+.DS_Store
+Thumbs.db
+desktop.ini
+.vs/
+.vscode/
+.idea/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.pyo
+*.swp
+*.swo
+*~
+
+# Transient OS/application state; do not blanket-ignore database backups,
+# diagnostics, import/export manifests, or required resources.
+tmp/
+temp/
+.cache/
+
+# IMPORTANT: Do not ignore source exports, .accdb/.mdb, .bas/.cls/.frm,
+# .frx, schema/SQL, resources, manifests, or historical ZIP files.
+# archive/legacy-baselines/ must remain eligible for Git tracking.
