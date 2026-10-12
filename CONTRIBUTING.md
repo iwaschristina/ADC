@@ -4,7 +4,7 @@ This document codifies the project owner's rules for **ADC 3.0** and subsequent 
 
 ## Authoritative code and provenance
 
-1. The **full ADC Git baseline is the complete VBA source export** (all standard, class, document, and form/report code-behind modules) from the latest authoritative database; the `.accdb` binary and other non-VBA objects are separate native restoration materials, not required for declaring the VBA baseline complete. Until the full VBA import is verified, this repository remains a preparation scaffold.
+1. The **full ADC Git baseline is the complete, unmodified export of every VBA module named `x__UTIL_ADC` or starting `x__UTIL_ADC_`**, with no unrelated modules. Include matching standard, class, document, or form/report code-behind components if present in the latest authoritative database; the `.accdb` binary and non-VBA Access objects are separate native restoration materials, not required for declaring the VBA baseline complete. Until the full VBA import is verified, this repository remains a preparation scaffold.
 2. Do not substitute older ZIPs, module exports, backups or reconstructed code for missing current VBA. Preserve exact exported source and the original native database snapshot independently.
 3. Preserve Access object names, VBA module names, classes, identifiers, namespaces, directory layout and explicitly prescribed abbreviations.
 4. The utility release (`3.0`) and module rewrite tracking (`CGPT-...`) are separate. Change a module's CGPT version chain only when the module is legitimately rewritten in accordance with its existing rewrite rules.
